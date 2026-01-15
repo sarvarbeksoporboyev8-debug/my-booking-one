@@ -1,35 +1,25 @@
 import 'package:flutter/foundation.dart';
 import '../models/models.dart';
-import '../services/services.dart';
+import '../services/mock_data_service.dart';
 
 class PassengerProvider with ChangeNotifier {
-  final PassengerService _passengerService;
+  final MockDataService _mockService = MockDataService();
 
   Passenger? _currentPassenger;
   bool _isLoading = false;
   String? _error;
   bool _isRegistrationComplete = false;
 
-  PassengerProvider(this._passengerService);
+  PassengerProvider();
 
   Passenger? get currentPassenger => _currentPassenger;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isRegistrationComplete => _isRegistrationComplete;
 
-  Future<void> loadPassenger(String id) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _currentPassenger = await _passengerService.getPassengerById(id);
-      _isRegistrationComplete = true;
-    } catch (e) {
-      _error = e.toString();
-    }
-
-    _isLoading = false;
+  void checkRegistration() {
+    _currentPassenger = _mockService.currentPassenger;
+    _isRegistrationComplete = _currentPassenger != null;
     notifyListeners();
   }
 
@@ -43,7 +33,7 @@ class PassengerProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentPassenger = await _passengerService.completeRegistration(
+      _currentPassenger = await _mockService.completeRegistration(
         passportNumber: passportNumber,
         passengerType: passengerType,
         age: age,

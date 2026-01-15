@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'services/services.dart';
 import 'providers/providers.dart';
 import 'screens/screens.dart';
 
@@ -14,27 +13,12 @@ class BookingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize services
-    final apiService = ApiService();
-    final authService = AuthService(apiService);
-    final flightService = FlightService(apiService);
-    final passengerService = PassengerService(apiService);
-    final bookingService = BookingService(apiService);
-
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(authService),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => FlightProvider(flightService),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => PassengerProvider(passengerService),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => BookingProvider(bookingService),
-        ),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => FlightProvider()),
+        ChangeNotifierProvider(create: (_) => PassengerProvider()),
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
       ],
       child: MaterialApp(
         title: 'Flight Booking',

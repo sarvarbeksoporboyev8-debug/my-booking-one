@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import '../models/models.dart';
-import '../services/services.dart';
+import '../services/mock_data_service.dart';
 
 class FlightProvider with ChangeNotifier {
-  final FlightService _flightService;
+  final MockDataService _mockService = MockDataService();
 
   List<Flight> _flights = [];
   List<Seat> _availableSeats = [];
@@ -12,7 +12,7 @@ class FlightProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  FlightProvider(this._flightService);
+  FlightProvider();
 
   List<Flight> get flights => _flights;
   List<Seat> get availableSeats => _availableSeats;
@@ -27,7 +27,7 @@ class FlightProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _flights = await _flightService.getAvailableFlights();
+      _flights = await _mockService.getAvailableFlights();
     } catch (e) {
       _error = e.toString();
     }
@@ -42,7 +42,7 @@ class FlightProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _selectedFlight = await _flightService.getFlightById(flightId);
+      _selectedFlight = await _mockService.getFlightById(flightId);
     } catch (e) {
       _error = e.toString();
     }
@@ -57,7 +57,7 @@ class FlightProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _availableSeats = await _flightService.getAvailableSeats(flightId);
+      _availableSeats = await _mockService.getAvailableSeats(flightId);
     } catch (e) {
       _error = e.toString();
     }
@@ -75,24 +75,6 @@ class FlightProvider with ChangeNotifier {
   void selectSeat(Seat seat) {
     _selectedSeat = seat;
     notifyListeners();
-  }
-
-  Future<bool> reserveSeat(String flightId, String seatNumber) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _flightService.reserveSeat(flightId, seatNumber);
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
   }
 
   void clearSelection() {

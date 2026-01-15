@@ -1,16 +1,16 @@
 import 'package:flutter/foundation.dart';
 import '../models/models.dart';
-import '../services/services.dart';
+import '../services/mock_data_service.dart';
 
 class BookingProvider with ChangeNotifier {
-  final BookingService _bookingService;
+  final MockDataService _mockService = MockDataService();
 
   List<Booking> _bookings = [];
   Booking? _currentBooking;
   bool _isLoading = false;
   String? _error;
 
-  BookingProvider(this._bookingService);
+  BookingProvider();
 
   List<Booking> get bookings => _bookings;
   Booking? get currentBooking => _currentBooking;
@@ -23,7 +23,7 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _bookings = await _bookingService.getBookings();
+      _bookings = await _mockService.getBookings();
     } catch (e) {
       _error = e.toString();
     }
@@ -42,12 +42,11 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final request = CreateBookingRequest(
+      _currentBooking = await _mockService.createBooking(
         passengerId: passengerId,
         flightId: flightId,
         description: description,
       );
-      _currentBooking = await _bookingService.createBooking(request);
       _isLoading = false;
       notifyListeners();
       return true;
@@ -57,21 +56,6 @@ class BookingProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
-  }
-
-  Future<void> loadBookingDetails(String id) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _currentBooking = await _bookingService.getBookingById(id);
-    } catch (e) {
-      _error = e.toString();
-    }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   void clearError() {
